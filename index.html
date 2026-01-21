@@ -274,6 +274,33 @@
     }
     .hidden { display:none; }
 
+    /* Suggerimenti */
+    .suggestions {
+      position: relative;
+    }
+    .suggestions-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 30;
+    }
+    .suggestion-item {
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .suggestion-item:hover {
+      background: #f2f2f7;
+    }
+
     @media (min-width: 768px) {
       main { max-width: 700px; margin: 0 auto 60px; }
     }
@@ -288,7 +315,10 @@
         <div class="card" id="inserimento-card">
           <div class="label-small">Inserimento rapido</div>
           <div class="row">
-            <input id="nome" type="text" placeholder="Nome alimento" style="flex:2" autocomplete="off" />
+            <div class="suggestions" style="flex:2">
+              <input id="nome" type="text" placeholder="Nome alimento" autocomplete="off" style="width:100%" />
+              <div id="suggestions-list" class="suggestions-list hidden"></div>
+            </div>
             <input id="quantita" type="number" min="1" value="1" style="width:70px" />
           </div>
           <div class="slider-row">
@@ -354,9 +384,16 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "dispensa_inventario_v3";
+    const STORAGE_KEY = "dispensa_inventario_v4";
     let inventario = [];
     let ordine = "dataAggiunta";
+
+    const baseSuggestions = [
+      "Sale grosso","Sale fino","Olio","Pasta","Sugo",
+      "Tonno","Farina","Zucchero","Riso","Biscotti",
+      "Fagioli","Ceci","Lenticchie","Passata di pomodoro",
+      "Caffè","Tè","Latte UHT","Crackers"
+    ];
 
     function carica() {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -375,6 +412,7 @@
     const quantitaLabel = document.getElementById("quantita-label");
     const scadenzaInput = document.getElementById("scadenza");
     const searchInput = document.getElementById("search");
+    const suggestionsList = document.getElementById("suggestions-list");
 
     quantitaInput.addEventListener("input", () => {
       const q = parseInt(quantitaInput.value || "1", 10);
@@ -387,6 +425,72 @@
       quantitaLabel.textContent = quantitaSlider.value;
     });
     searchInput.addEventListener("input", render);
+
+    nomeInput.addEventListener("input", () => {
+      aggiornaSuggerimenti();
+    });
+    nomeInput.addEventListener("focus", () => {
+      aggiornaSuggerimenti();
+    });
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".suggestions")) {
+        chiudiSuggerimenti();
+      }
+    });
+
+    function frequenzeDaInventario() {
+      const freq = {};
+      inventario.forEach(it => {
+        const nome = it.nome;
+        freq[nome] = (freq[nome] || 0) + 1;
+      });
+      return freq;
+    }
+
+    function suggerimentiSmart() {
+      const freq = frequenzeDaInventario();
+      const set = new Set(baseSuggestions);
+      Object.keys(freq).forEach(k => set.add(k));
+      let arr = Array.from(set);
+
+      const query = nomeInput.value.trim().toLowerCase();
+      if (query) {
+        arr = arr.filter(n => n.toLowerCase().includes(query));
+      }
+
+      arr.sort((a,b) => {
+        const fa = freq[a] || 0;
+        const fb = freq[b] || 0;
+        if (fb !== fa) return fb - fa;
+        return a.localeCompare(b, "it", { sensitivity:"base" });
+      });
+
+      return arr.slice(0, 10);
+    }
+
+    function aggiornaSuggerimenti() {
+      const suggerimenti = suggerimentiSmart();
+      if (!suggerimenti.length) {
+        chiudiSuggerimenti();
+        return;
+      }
+      suggestionsList.innerHTML = "";
+      suggerimenti.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "suggestion-item";
+        div.textContent = s;
+        div.onclick = () => {
+          nomeInput.value = s;
+          chiudiSuggerimenti();
+        };
+        suggestionsList.appendChild(div);
+      });
+      suggestionsList.classList.remove("hidden");
+    }
+
+    function chiudiSuggerimenti() {
+      suggestionsList.classList.add("hidden");
+    }
 
     function formatDateInput(date) {
       const y = date.getFullYear();
@@ -426,6 +530,7 @@
       quantitaSlider.value = "1";
       quantitaLabel.textContent = "1";
       scadenzaInput.value = "";
+      chiudiSuggerimenti();
       render();
     }
 
