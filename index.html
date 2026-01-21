@@ -64,31 +64,37 @@
     input:focus, select:focus {
       border-color: var(--accent);
     }
-    input[type="number"] {
-      text-align: center;
-    }
+    input[type="number"] { text-align: center; }
     button.primary {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
       cursor: pointer;
     }
-    button.primary:active {
-      opacity: 0.8;
-    }
+    button.primary:active { opacity: 0.8; }
     .label-small {
       font-size: 11px;
       color: var(--text-secondary);
       margin-bottom: 4px;
     }
-    .slider-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .slider-row { display: flex; flex-direction: column; gap: 4px; }
+    input[type="range"] { width: 100%; }
+    .date-quick-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
     }
-    input[type="range"] {
-      width: 100%;
+    .date-quick-row button {
+      font-size: 10px;
+      padding: 4px 6px;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #f2f2f7;
+      cursor:pointer;
     }
+    .date-quick-row button:active { background:#e5e5ea; }
+
     .segmented {
       display: flex;
       background: #e5e5ea;
@@ -109,12 +115,8 @@
       background: var(--card-bg);
       box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
-    .search-row {
-      margin-bottom: 8px;
-    }
-    .search-row input {
-      width: 100%;
-    }
+    .search-row { margin-bottom: 8px; }
+    .search-row input { width: 100%; }
 
     .list {
       display: flex;
@@ -138,20 +140,16 @@
       flex-shrink: 0;
       margin-top: 4px;
     }
-    .list-main {
-      flex: 1;
-    }
+    .list-main { flex: 1; }
     .list-title {
       font-weight: 600;
       margin-bottom: 4px;
+      word-break: break-word;
     }
     .list-qty-row {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 13px;
-    }
-    .list-qty-row span {
       font-size: 13px;
     }
     .btn-circle {
@@ -214,6 +212,7 @@
       font-weight: 600;
       font-size: 12px;
       line-height: 1.3;
+      word-break: break-word;
     }
     .trash {
       background:none;
@@ -260,14 +259,10 @@
       color: var(--text-secondary);
       cursor: pointer;
     }
-    .tab-button span {
-      display:block;
-    }
+    .tab-button span { display:block; }
     .tab-button svg {
-      width:20px;
-      height:20px;
-      display:block;
-      margin:0 auto 2px;
+      width:20px; height:20px;
+      display:block; margin:0 auto 2px;
     }
     .tab-button.active {
       color: var(--accent);
@@ -297,8 +292,19 @@
             <input id="quantita-slider" type="range" min="1" max="10" step="1" value="1" />
           </div>
           <div class="row">
-            <input id="scadenza" type="date" style="flex:1" />
-            <button class="primary" style="flex:0 0 110px" onclick="aggiungi()">Aggiungi</button>
+            <div style="flex:1">
+              <input id="scadenza" type="date" style="width:100%" />
+              <div class="date-quick-row">
+                <button type="button" onclick="setQuickDate(0)">Oggi</button>
+                <button type="button" onclick="setQuickDate(1)">Domani</button>
+                <button type="button" onclick="setQuickDate(2)">Dopodomani</button>
+                <button type="button" onclick="setQuickDate(3)">Tra 3 giorni</button>
+                <button type="button" onclick="setQuickDate(5)">Tra 5 giorni</button>
+                <button type="button" onclick="setQuickDate(7)">+1 Settimana</button>
+                <button type="button" onclick="setQuickDate(14)">+2 Settimane</button>
+              </div>
+            </div>
+            <button class="primary" style="flex:0 0 110px; align-self:flex-start" onclick="aggiungi()">Aggiungi</button>
           </div>
         </div>
 
@@ -344,7 +350,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "dispensa_inventario_v2";
+    const STORAGE_KEY = "dispensa_inventario_v3";
     let inventario = [];
     let ordine = "dataAggiunta";
 
@@ -363,208 +369,6 @@
     const quantitaInput = document.getElementById("quantita");
     const quantitaSlider = document.getElementById("quantita-slider");
     const quantitaLabel = document.getElementById("quantita-label");
-    const scadenzaInput = document.getElementById("scadenza");
-    const searchInput = document.getElementById("search");
+    c
 
-    quantitaInput.addEventListener("input", () => {
-      const q = parseInt(quantitaInput.value || "1", 10);
-      const clamped = isNaN(q) ? 1 : Math.max(1, Math.min(q, 999));
-      quantitaSlider.value = clamped > 10 ? 10 : clamped;
-      quantitaLabel.textContent = clamped;
-    });
-    quantitaSlider.addEventListener("input", () => {
-      quantitaInput.value = quantitaSlider.value;
-      quantitaLabel.textContent = quantitaSlider.value;
-    });
-    searchInput.addEventListener("input", render);
-
-    function aggiungi() {
-      const nome = nomeInput.value.trim();
-      let q = parseInt(quantitaInput.value || "1", 10);
-      const d = scadenzaInput.value;
-      if (!nome) return;
-      if (isNaN(q) || q < 1) q = 1;
-
-      const item = {
-        id: Date.now(),
-        nome,
-        quantita: q,
-        scadenza: d || null,
-        dataAggiunta: new Date().toISOString()
-      };
-      inventario.push(item);
-      salva();
-      nomeInput.value = "";
-      quantitaInput.value = "1";
-      quantitaSlider.value = "1";
-      quantitaLabel.textContent = "1";
-      scadenzaInput.value = "";
-      render();
-    }
-
-    function aumenta(id) {
-      const it = inventario.find(i => i.id === id);
-      if (!it) return;
-      it.quantita += 1;
-      salva();
-      render();
-    }
-    function diminuisci(id) {
-      const idx = inventario.findIndex(i => i.id === id);
-      if (idx === -1) return;
-      if (inventario[idx].quantita > 1) {
-        inventario[idx].quantita -= 1;
-      } else {
-        inventario.splice(idx, 1);
-      }
-      salva();
-      render();
-    }
-    function elimina(id) {
-      inventario = inventario.filter(i => i.id !== id);
-      salva();
-      render();
-    }
-
-    function aggiornaScadenza(id, value) {
-      const it = inventario.find(i => i.id === id);
-      if (!it) return;
-      it.scadenza = value || null;
-      salva();
-      render();
-    }
-
-    function coloreBadge(it) {
-      if (!it.scadenza) return "#34c759";
-      const oggi = new Date(); oggi.setHours(0,0,0,0);
-      const d = new Date(it.scadenza); d.setHours(0,0,0,0);
-      const diff = (d - oggi) / (1000*60*60*24);
-      if (diff < 0) return "#ff3b30";
-      if (diff <= 2) return "#ff9500";
-      if (diff <= 7) return "#ffcc00";
-      return "#34c759";
-    }
-
-    function formatData(it) {
-      if (!it.scadenza) return "Scadenza: -";
-      const d = new Date(it.scadenza);
-      return "Scadenza: " + d.toLocaleDateString("it-IT");
-    }
-
-    function setOrdine(o) {
-      ordine = o;
-      document.getElementById("sort-data").classList.toggle("active", o === "dataAggiunta");
-      document.getElementById("sort-nome").classList.toggle("active", o === "alfabetico");
-      document.getElementById("sort-scadenza").classList.toggle("active", o === "scadenza");
-      document.getElementById("sort2-data").classList.toggle("active", o === "dataAggiunta");
-      document.getElementById("sort2-nome").classList.toggle("active", o === "alfabetico");
-      document.getElementById("sort2-scadenza").classList.toggle("active", o === "scadenza");
-      render();
-    }
-
-    function sortedFiltered() {
-      const q = searchInput.value.trim().toLowerCase();
-      let arr = inventario.slice();
-      if (q) {
-        arr = arr.filter(i => i.nome.toLowerCase().includes(q));
-      }
-      arr.sort((a,b) => {
-        if (ordine === "dataAggiunta") {
-          return new Date(a.dataAggiunta) - new Date(b.dataAggiunta);
-        } else if (ordine === "alfabetico") {
-          return a.nome.localeCompare(b.nome, "it", { sensitivity: "base" });
-        } else if (ordine === "scadenza") {
-          if (!a.scadenza && !b.scadenza) return 0;
-          if (!a.scadenza) return 1;
-          if (!b.scadenza) return -1;
-          return new Date(a.scadenza) - new Date(b.scadenza);
-        }
-        return 0;
-      });
-      return arr;
-    }
-
-    function renderGestione(list) {
-      const container = document.getElementById("lista-gestione");
-      container.innerHTML = "";
-      list.forEach(it => {
-        const row = document.createElement("div");
-        row.className = "list-item";
-        row.innerHTML = `
-          <div class="badge-circle" style="background:${coloreBadge(it)}"></div>
-          <div class="list-main">
-            <div class="list-title">${it.nome}</div>
-            <div class="list-qty-row">
-              <span>Qt: ${it.quantita}</span>
-              <button class="btn-circle btn-minus" onclick="diminuisci(${it.id})">−</button>
-              <button class="btn-circle btn-plus" onclick="aumenta(${it.id})">+</button>
-            </div>
-          </div>
-          <div class="list-side">
-            <span>Scadenza</span>
-            <input type="date" value="${it.scadenza || ""}" onchange="aggiornaScadenza(${it.id}, this.value)" />
-            <span>${formatData(it)}</span>
-          </div>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function renderDispensa(list) {
-      const container = document.getElementById("grid-dispensa");
-      container.innerHTML = "";
-      list.forEach(it => {
-        const card = document.createElement("div");
-        card.className = "grid-item";
-        card.innerHTML = `
-          <div class="grid-header">
-            <div class="grid-qty-row">
-              <span class="badge-circle" style="background:${coloreBadge(it)}"></span>
-              <span>Qt: ${it.quantita}</span>
-            </div>
-            <button class="trash" onclick="elimina(${it.id})">🗑</button>
-          </div>
-          <div class="grid-title">${it.nome}</div>
-          <div class="grid-controls">
-            <button class="btn-circle-small" style="background:${'#ff3b30'}" onclick="diminuisci(${it.id})">−</button>
-            <button class="btn-circle-small" style="background:${'#34c759'}" onclick="aumenta(${it.id})">+</button>
-          </div>
-          <div style="font-size:10px; color:${'#666'};">${formatData(it)}</div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function render() {
-      const list = sortedFiltered();
-      renderGestione(list);
-      renderDispensa(list);
-    }
-
-    function switchTab(tab) {
-      const gestione = document.getElementById("tab-gestione");
-      const dispensa = document.getElementById("tab-dispensa");
-      const btnGest = document.getElementById("tab-btn-gestione");
-      const btnDisp = document.getElementById("tab-btn-dispensa");
-      const headerTitle = document.getElementById("header-title");
-
-      if (tab === "gestione") {
-        gestione.classList.remove("hidden");
-        dispensa.classList.add("hidden");
-        btnGest.classList.add("active");
-        btnDisp.classList.remove("active");
-        headerTitle.textContent = "Gestione dispensa";
-      } else {
-        gestione.classList.add("hidden");
-        dispensa.classList.remove("hidden");
-        btnGest.classList.remove("active");
-        btnDisp.classList.add("active");
-        headerTitle.textContent = "Dispensa";
-      }
-    }
-
-    carica();
-  </script>
-</body>
-</html>
 
