@@ -384,8 +384,11 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "dispensa_inventario_v4";
+    const STORAGE_KEY = "dispensa_inventario_v5";
+    const FREQ_KEY = "dispensa_frequenze_v1";
+
     let inventario = [];
+    let frequenze = {};
     let ordine = "dataAggiunta";
 
     const baseSuggestions = [
@@ -400,10 +403,15 @@
       if (raw) {
         try { inventario = JSON.parse(raw); } catch (e) { inventario = []; }
       }
+      const rawFreq = localStorage.getItem(FREQ_KEY);
+      if (rawFreq) {
+        try { frequenze = JSON.parse(rawFreq); } catch (e) { frequenze = {}; }
+      }
       render();
     }
     function salva() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(inventario));
+      localStorage.setItem(FREQ_KEY, JSON.stringify(frequenze));
     }
 
     const nomeInput = document.getElementById("nome");
@@ -438,19 +446,19 @@
       }
     });
 
-    function frequenzeDaInventario() {
-      const freq = {};
-      inventario.forEach(it => {
-        const nome = it.nome;
-        freq[nome] = (freq[nome] || 0) + 1;
-      });
-      return freq;
+    function normalizzaNome(nome) {
+      return nome.trim();
+    }
+
+    function aggiornaFrequenza(nome) {
+      const key = normalizzaNome(nome);
+      if (!key) return;
+      frequenze[key] = (frequenze[key] || 0) + 1;
     }
 
     function suggerimentiSmart() {
-      const freq = frequenzeDaInventario();
       const set = new Set(baseSuggestions);
-      Object.keys(freq).forEach(k => set.add(k));
+      Object.keys(frequenze).forEach(k => set.add(k));
       let arr = Array.from(set);
 
       const query = nomeInput.value.trim().toLowerCase();
@@ -459,8 +467,8 @@
       }
 
       arr.sort((a,b) => {
-        const fa = freq[a] || 0;
-        const fb = freq[b] || 0;
+        const fa = frequenze[a] || 0;
+        const fb = frequenze[b] || 0;
         if (fb !== fa) return fb - fa;
         return a.localeCompare(b, "it", { sensitivity:"base" });
       });
@@ -482,6 +490,7 @@
         div.onclick = () => {
           nomeInput.value = s;
           chiudiSuggerimenti();
+          aggiornaSuggerimenti();
         };
         suggestionsList.appendChild(div);
       });
@@ -510,7 +519,8 @@
     }
 
     function aggiungi() {
-      const nome = nomeInput.value.trim();
+      const nomeRaw = nomeInput.value;
+      const nome = normalizzaNome(nomeRaw);
       let q = parseInt(quantitaInput.value || "1", 10);
       const d = scadenzaInput.value;
       if (!nome) return;
@@ -524,7 +534,9 @@
         dataAggiunta: new Date().toISOString()
       };
       inventario.push(item);
+      aggiornaFrequenza(nome);
       salva();
+
       nomeInput.value = "";
       quantitaInput.value = "1";
       quantitaSlider.value = "1";
