@@ -1,0 +1,8 @@
+<!-- favicon.svg: piatto minimale arancione -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- piatto -->
+  <circle cx="32" cy="32" r="22" fill="#FF8A34"/>
+  <circle cx="32" cy="32" r="16" fill="#FFE0C4"/>
+  <!-- base del piatto -->
+  <ellipse cx="32" cy="46" rx="14" ry="3" fill="#E56D1F" opacity="0.85"/>
+</svg>
