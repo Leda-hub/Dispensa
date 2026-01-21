@@ -19,6 +19,7 @@
       --success: #34c759;
       --warn: #ff9500;
       --soft-yellow: #ffcc00;
+      --neutral-gray: #9f9f9f;
     }
     * { box-sizing: border-box; }
     body {
@@ -806,7 +807,7 @@
     }
 
     function coloreBadge(it) {
-      if (!it.scadenza) return "#34c759";
+      if (!it.scadenza) return "#9f9f9f"; // grigio per "nessuna scadenza" [web:459][web:460]
       const oggi = new Date(); oggi.setHours(0,0,0,0);
       const d = new Date(it.scadenza); d.setHours(0,0,0,0);
       const diff = (d - oggi) / (1000*60*60*24);
