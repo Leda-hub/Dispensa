@@ -5,43 +5,348 @@
   <title>Dispensa di Casa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #f5f5f5; }
-    h1 { font-size: 22px; margin-bottom: 12px; }
-    .card { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .row { display: flex; gap: 8px; margin-bottom: 8px; }
-    input, button { font-size: 15px; padding: 6px 8px; border-radius: 6px; border: 1px solid #ccc; }
-    button.primary { background: #007aff; color: #fff; border-color: #007aff; }
-    .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 12px; }
-    .item { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); font-size: 13px; }
-    .item-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
-    .badge { width:10px; height:10px; border-radius:999px; margin-right:4px; display:inline-block; }
-    .controls { display:flex; gap:4px; align-items:center; }
-    .btn-circle { width:20px; height:20px; border-radius:999px; border:none; color:#fff; font-size:12px; line-height:20px; padding:0; text-align:center; }
-    .btn-minus { background:#ff3b30; }
-    .btn-plus { background:#34c759; }
-    .trash { background:none; border:none; color:#ff3b30; font-size:14px; padding:0; cursor:pointer; }
-    .meta { font-size:11px; color:#666; margin-top:4px; }
+    :root {
+      --bg: #f5f5f5;
+      --card-bg: #ffffff;
+      --accent: #007aff;
+      --text-main: #111111;
+      --text-secondary: #666666;
+      --danger: #ff3b30;
+      --success: #34c759;
+      --warn: #ff9500;
+      --soft-yellow: #ffcc00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 12px 16px 4px;
+      font-size: 18px;
+      font-weight: 600;
+      background: var(--card-bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    main {
+      flex: 1;
+      padding: 8px 12px 56px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    input, button, select {
+      font-size: 15px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+    input[type="number"] {
+      text-align: center;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      cursor: pointer;
+    }
+    button.primary:active {
+      opacity: 0.8;
+    }
+    .label-small {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .segmented {
+      display: flex;
+      background: #e5e5ea;
+      border-radius: 8px;
+      padding: 2px;
+      margin-bottom: 8px;
+    }
+    .segmented button {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      padding: 6px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .segmented button.active {
+      background: var(--card-bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .search-row {
+      margin-bottom: 8px;
+    }
+    .search-row input {
+      width: 100%;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .list-item {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 13px;
+    }
+    .badge-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .list-main {
+      flex: 1;
+    }
+    .list-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .list-qty-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .list-qty-row span {
+      font-size: 13px;
+    }
+    .btn-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      line-height: 24px;
+      padding: 0;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn-minus { background: var(--danger); }
+    .btn-plus { background: var(--success); }
+    .list-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .list-side input[type="date"] {
+      font-size: 11px;
+      padding: 3px 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .grid-item {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .grid-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:4px;
+    }
+    .grid-qty-row {
+      display:flex;
+      align-items:center;
+      gap:4px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .grid-title {
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .trash {
+      background:none;
+      border:none;
+      color: var(--danger);
+      font-size:14px;
+      padding:0;
+      cursor:pointer;
+    }
+    .grid-controls {
+      display:flex;
+      align-items:center;
+      gap:4px;
+      justify-content:flex-start;
+    }
+    .btn-circle-small {
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      border:none;
+      color:#fff;
+      font-size:11px;
+      line-height:18px;
+      padding:0;
+      text-align:center;
+      cursor:pointer;
+    }
+    .bottom-tabbar {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid #ddd;
+      display: flex;
+      padding: 4px 0;
+      z-index: 20;
+    }
+    .tab-button {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      padding: 4px 0;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .tab-button span {
+      display:block;
+    }
+    .tab-button svg {
+      width:20px;
+      height:20px;
+      display:block;
+      margin:0 auto 2px;
+    }
+    .tab-button.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .hidden { display:none; }
+
+    @media (min-width: 768px) {
+      main { max-width: 700px; margin: 0 auto 60px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Dispensa di Casa</h1>
+  <div class="app">
+    <header id="header-title">Gestione dispensa</header>
+    <main>
+      <!-- TAB: GESTIONE -->
+      <section id="tab-gestione">
+        <div class="card" id="inserimento-card">
+          <div class="label-small">Inserimento rapido</div>
+          <div class="row">
+            <input id="nome" type="text" placeholder="Nome alimento" style="flex:2" autocomplete="off" />
+            <input id="quantita" type="number" min="1" value="1" style="width:70px" />
+          </div>
+          <div class="slider-row">
+            <span class="label-small">Quantità: <span id="quantita-label">1</span></span>
+            <input id="quantita-slider" type="range" min="1" max="10" step="1" value="1" />
+          </div>
+          <div class="row">
+            <input id="scadenza" type="date" style="flex:1" />
+            <button class="primary" style="flex:0 0 110px" onclick="aggiungi()">Aggiungi</button>
+          </div>
+        </div>
 
-  <div class="card">
-    <div class="row">
-      <input id="nome" type="text" placeholder="Nome alimento" style="flex:2" />
-      <input id="quantita" type="number" min="1" value="1" style="width:70px" />
-    </div>
-    <div class="row">
-      <input id="scadenza" type="date" style="flex:1" />
-      <button class="primary" onclick="aggiungi()">Aggiungi</button>
-    </div>
+        <div class="row search-row">
+          <input id="search" type="search" placeholder="Cerca alimento" />
+        </div>
+
+        <div class="segmented">
+          <button id="sort-data" class="active" onclick="setOrdine('dataAggiunta')">Data di aggiunta</button>
+          <button id="sort-nome" onclick="setOrdine('alfabetico')">Ordine alfabetico</button>
+          <button id="sort-scadenza" onclick="setOrdine('scadenza')">Data di scadenza</button>
+        </div>
+
+        <div class="list" id="lista-gestione"></div>
+      </section>
+
+      <!-- TAB: DISPENSA -->
+      <section id="tab-dispensa" class="hidden">
+        <div class="segmented">
+          <button id="sort2-data" class="active" onclick="setOrdine('dataAggiunta')">Data di aggiunta</button>
+          <button id="sort2-nome" onclick="setOrdine('alfabetico')">Ordine alfabetico</button>
+          <button id="sort2-scadenza" onclick="setOrdine('scadenza')">Data di scadenza</button>
+        </div>
+
+        <div class="grid" id="grid-dispensa"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-tabbar">
+      <div id="tab-btn-gestione" class="tab-button active" onclick="switchTab('gestione')">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M4 4h12v2H4V4zm0 5h12v2H4V9zm0 5h12v2H4v-2z" />
+        </svg>
+        <span>Gestione</span>
+      </div>
+      <div id="tab-btn-dispensa" class="tab-button" onclick="switchTab('dispensa')">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M3 3h6v6H3V3zm8 0h6v6h-6V3zm-8 8h6v6H3v-6zm8 0h6v6h-6v-6z" />
+        </svg>
+        <span>Dispensa</span>
+      </div>
+    </nav>
   </div>
 
-  <div class="items" id="lista"></div>
-
   <script>
-    const STORAGE_KEY = "dispensa_inventario_v1";
+    const STORAGE_KEY = "dispensa_inventario_v2";
     let inventario = [];
+    let ordine = "dataAggiunta";
 
     function carica() {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -50,41 +355,60 @@
       }
       render();
     }
-
     function salva() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(inventario));
     }
 
-    function aggiungi() {
-      const nome = document.getElementById("nome").value.trim();
-      const q = parseInt(document.getElementById("quantita").value || "1", 10);
-      const d = document.getElementById("scadenza").value; // yyyy-MM-dd
+    const nomeInput = document.getElementById("nome");
+    const quantitaInput = document.getElementById("quantita");
+    const quantitaSlider = document.getElementById("quantita-slider");
+    const quantitaLabel = document.getElementById("quantita-label");
+    const scadenzaInput = document.getElementById("scadenza");
+    const searchInput = document.getElementById("search");
 
+    quantitaInput.addEventListener("input", () => {
+      const q = parseInt(quantitaInput.value || "1", 10);
+      const clamped = isNaN(q) ? 1 : Math.max(1, Math.min(q, 999));
+      quantitaSlider.value = clamped > 10 ? 10 : clamped;
+      quantitaLabel.textContent = clamped;
+    });
+    quantitaSlider.addEventListener("input", () => {
+      quantitaInput.value = quantitaSlider.value;
+      quantitaLabel.textContent = quantitaSlider.value;
+    });
+    searchInput.addEventListener("input", render);
+
+    function aggiungi() {
+      const nome = nomeInput.value.trim();
+      let q = parseInt(quantitaInput.value || "1", 10);
+      const d = scadenzaInput.value;
       if (!nome) return;
+      if (isNaN(q) || q < 1) q = 1;
+
       const item = {
         id: Date.now(),
         nome,
-        quantita: q > 0 ? q : 1,
+        quantita: q,
         scadenza: d || null,
         dataAggiunta: new Date().toISOString()
       };
       inventario.push(item);
       salva();
+      nomeInput.value = "";
+      quantitaInput.value = "1";
+      quantitaSlider.value = "1";
+      quantitaLabel.textContent = "1";
+      scadenzaInput.value = "";
       render();
-
-      document.getElementById("nome").value = "";
-      document.getElementById("quantita").value = "1";
-      document.getElementById("scadenza").value = "";
     }
 
     function aumenta(id) {
-      const item = inventario.find(i => i.id === id);
-      if (!item) return;
-      item.quantita += 1;
+      const it = inventario.find(i => i.id === id);
+      if (!it) return;
+      it.quantita += 1;
       salva();
       render();
     }
-
     function diminuisci(id) {
       const idx = inventario.findIndex(i => i.id === id);
       if (idx === -1) return;
@@ -96,24 +420,29 @@
       salva();
       render();
     }
-
     function elimina(id) {
       inventario = inventario.filter(i => i.id !== id);
       salva();
       render();
     }
 
-    function coloreBadge(item) {
-      if (!item.scadenza) return "#34c759"; // verde
-      const oggi = new Date();
-      oggi.setHours(0,0,0,0);
-      const d = new Date(item.scadenza);
-      d.setHours(0,0,0,0);
+    function aggiornaScadenza(id, value) {
+      const it = inventario.find(i => i.id === id);
+      if (!it) return;
+      it.scadenza = value || null;
+      salva();
+      render();
+    }
+
+    function coloreBadge(it) {
+      if (!it.scadenza) return "#34c759";
+      const oggi = new Date(); oggi.setHours(0,0,0,0);
+      const d = new Date(it.scadenza); d.setHours(0,0,0,0);
       const diff = (d - oggi) / (1000*60*60*24);
-      if (diff < 0) return "#ff3b30";      // rosso
-      if (diff <= 2) return "#ff9500";     // arancione
-      if (diff <= 7) return "#ffcc00";     // giallo
-      return "#34c759";                    // verde
+      if (diff < 0) return "#ff3b30";
+      if (diff <= 2) return "#ff9500";
+      if (diff <= 7) return "#ffcc00";
+      return "#34c759";
     }
 
     function formatData(it) {
@@ -122,35 +451,120 @@
       return "Scadenza: " + d.toLocaleDateString("it-IT");
     }
 
-    function render() {
-      const lista = document.getElementById("lista");
-      lista.innerHTML = "";
-      inventario
-        .slice()
-        .sort((a,b) => new Date(a.dataAggiunta) - new Date(b.dataAggiunta))
-        .forEach(it => {
-          const div = document.createElement("div");
-          div.className = "item";
-          div.innerHTML = `
-            <div class="item-header">
-              <div>
-                <span class="badge" style="background:${coloreBadge(it)}"></span>
-                <strong>${it.nome}</strong>
-              </div>
-              <button class="trash" onclick="elimina(${it.id})">🗑</button>
-            </div>
-            <div class="controls">
+    function setOrdine(o) {
+      ordine = o;
+      document.getElementById("sort-data").classList.toggle("active", o === "dataAggiunta");
+      document.getElementById("sort-nome").classList.toggle("active", o === "alfabetico");
+      document.getElementById("sort-scadenza").classList.toggle("active", o === "scadenza");
+      document.getElementById("sort2-data").classList.toggle("active", o === "dataAggiunta");
+      document.getElementById("sort2-nome").classList.toggle("active", o === "alfabetico");
+      document.getElementById("sort2-scadenza").classList.toggle("active", o === "scadenza");
+      render();
+    }
+
+    function sortedFiltered() {
+      const q = searchInput.value.trim().toLowerCase();
+      let arr = inventario.slice();
+      if (q) {
+        arr = arr.filter(i => i.nome.toLowerCase().includes(q));
+      }
+      arr.sort((a,b) => {
+        if (ordine === "dataAggiunta") {
+          return new Date(a.dataAggiunta) - new Date(b.dataAggiunta);
+        } else if (ordine === "alfabetico") {
+          return a.nome.localeCompare(b.nome, "it", { sensitivity: "base" });
+        } else if (ordine === "scadenza") {
+          if (!a.scadenza && !b.scadenza) return 0;
+          if (!a.scadenza) return 1;
+          if (!b.scadenza) return -1;
+          return new Date(a.scadenza) - new Date(b.scadenza);
+        }
+        return 0;
+      });
+      return arr;
+    }
+
+    function renderGestione(list) {
+      const container = document.getElementById("lista-gestione");
+      container.innerHTML = "";
+      list.forEach(it => {
+        const row = document.createElement("div");
+        row.className = "list-item";
+        row.innerHTML = `
+          <div class="badge-circle" style="background:${coloreBadge(it)}"></div>
+          <div class="list-main">
+            <div class="list-title">${it.nome}</div>
+            <div class="list-qty-row">
               <span>Qt: ${it.quantita}</span>
               <button class="btn-circle btn-minus" onclick="diminuisci(${it.id})">−</button>
               <button class="btn-circle btn-plus" onclick="aumenta(${it.id})">+</button>
             </div>
-            <div class="meta">${formatData(it)}</div>
-          `;
-          lista.appendChild(div);
-        });
+          </div>
+          <div class="list-side">
+            <span>Scadenza</span>
+            <input type="date" value="${it.scadenza || ""}" onchange="aggiornaScadenza(${it.id}, this.value)" />
+            <span>${formatData(it)}</span>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderDispensa(list) {
+      const container = document.getElementById("grid-dispensa");
+      container.innerHTML = "";
+      list.forEach(it => {
+        const card = document.createElement("div");
+        card.className = "grid-item";
+        card.innerHTML = `
+          <div class="grid-header">
+            <div class="grid-qty-row">
+              <span class="badge-circle" style="background:${coloreBadge(it)}"></span>
+              <span>Qt: ${it.quantita}</span>
+            </div>
+            <button class="trash" onclick="elimina(${it.id})">🗑</button>
+          </div>
+          <div class="grid-title">${it.nome}</div>
+          <div class="grid-controls">
+            <button class="btn-circle-small" style="background:${'#ff3b30'}" onclick="diminuisci(${it.id})">−</button>
+            <button class="btn-circle-small" style="background:${'#34c759'}" onclick="aumenta(${it.id})">+</button>
+          </div>
+          <div style="font-size:10px; color:${'#666'};">${formatData(it)}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function render() {
+      const list = sortedFiltered();
+      renderGestione(list);
+      renderDispensa(list);
+    }
+
+    function switchTab(tab) {
+      const gestione = document.getElementById("tab-gestione");
+      const dispensa = document.getElementById("tab-dispensa");
+      const btnGest = document.getElementById("tab-btn-gestione");
+      const btnDisp = document.getElementById("tab-btn-dispensa");
+      const headerTitle = document.getElementById("header-title");
+
+      if (tab === "gestione") {
+        gestione.classList.remove("hidden");
+        dispensa.classList.add("hidden");
+        btnGest.classList.add("active");
+        btnDisp.classList.remove("active");
+        headerTitle.textContent = "Gestione dispensa";
+      } else {
+        gestione.classList.add("hidden");
+        dispensa.classList.remove("hidden");
+        btnGest.classList.remove("active");
+        btnDisp.classList.add("active");
+        headerTitle.textContent = "Dispensa";
+      }
     }
 
     carica();
   </script>
 </body>
 </html>
+
