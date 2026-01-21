@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Dispensa di Casa</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta http-equiv="cache-control" content="no-cache">
   <meta http-equiv="expires" content="0">
   <meta http-equiv="pragma" content="no-cache">
@@ -25,6 +25,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg);
       color: var(--text-main);
+      -webkit-text-size-adjust: 100%;
     }
     .app {
       min-height: 100vh;
@@ -58,30 +59,37 @@
       margin-bottom: 8px;
     }
     input, button, select {
-      font-size: 15px;
+      font-size: 16px;
       padding: 7px 9px;
       border-radius: 8px;
       border: 1px solid #ccc;
       outline: none;
+      -webkit-appearance: none;
     }
     input:focus, select:focus {
       border-color: var(--accent);
     }
     input[type="number"] { text-align: center; }
+    button {
+      cursor: pointer;
+    }
     button.primary {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
-      cursor: pointer;
     }
-    button.primary:active { opacity: 0.8; }
+    button.primary:active { opacity: 0.85; }
     .label-small {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
       margin-bottom: 4px;
     }
     .slider-row { display: flex; flex-direction: column; gap: 4px; }
-    input[type="range"] { width: 100%; }
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      background: transparent;
+    }
 
     .date-quick-row {
       display:flex;
@@ -90,12 +98,11 @@
       margin-top:4px;
     }
     .date-quick-row button {
-      font-size: 10px;
+      font-size: 11px;
       padding: 4px 6px;
       border-radius: 999px;
       border: 1px solid #ccc;
       background: #f2f2f7;
-      cursor:pointer;
     }
     .date-quick-row button:active { background:#e5e5ea; }
 
@@ -110,10 +117,9 @@
       flex: 1;
       border: none;
       background: transparent;
-      font-size: 12px;
+      font-size: 13px;
       padding: 6px 4px;
       border-radius: 6px;
-      cursor: pointer;
     }
     .segmented button.active {
       background: var(--card-bg);
@@ -135,7 +141,7 @@
       display: flex;
       gap: 8px;
       align-items: flex-start;
-      font-size: 13px;
+      font-size: 14px;
     }
     .badge-circle {
       width: 12px;
@@ -154,19 +160,17 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 13px;
     }
     .btn-circle {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 999px;
       border: none;
       color: #fff;
-      font-size: 14px;
-      line-height: 24px;
+      font-size: 18px;
+      line-height: 28px;
       padding: 0;
       text-align: center;
-      cursor: pointer;
     }
     .btn-minus { background: var(--danger); }
     .btn-plus { background: var(--success); }
@@ -179,13 +183,13 @@
       color: var(--text-secondary);
     }
     .list-side input[type="date"] {
-      font-size: 11px;
+      font-size: 13px;
       padding: 3px 4px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 8px;
       margin-top: 8px;
     }
@@ -194,7 +198,7 @@
       border-radius: 10px;
       padding: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      font-size: 12px;
+      font-size: 13px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -209,12 +213,12 @@
       display:flex;
       align-items:center;
       gap:4px;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
     }
     .grid-title {
       font-weight: 600;
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.3;
       word-break: break-word;
     }
@@ -222,27 +226,25 @@
       background:none;
       border:none;
       color: var(--danger);
-      font-size:14px;
+      font-size:18px;
       padding:0;
-      cursor:pointer;
     }
     .grid-controls {
       display:flex;
       align-items:center;
-      gap:4px;
+      gap:6px;
       justify-content:flex-start;
     }
     .btn-circle-small {
-      width:18px;
-      height:18px;
+      width:22px;
+      height:22px;
       border-radius:999px;
       border:none;
       color:#fff;
-      font-size:11px;
-      line-height:18px;
+      font-size:14px;
+      line-height:22px;
       padding:0;
       text-align:center;
-      cursor:pointer;
     }
     .bottom-tabbar {
       position: sticky;
@@ -258,14 +260,13 @@
     .tab-button {
       flex: 1;
       text-align: center;
-      font-size: 11px;
+      font-size: 12px;
       padding: 4px 0;
       color: var(--text-secondary);
-      cursor: pointer;
     }
     .tab-button span { display:block; }
     .tab-button svg {
-      width:20px; height:20px;
+      width:22px; height:22px;
       display:block; margin:0 auto 2px;
     }
     .tab-button.active {
@@ -294,8 +295,7 @@
     }
     .suggestion-item {
       padding: 6px 10px;
-      font-size: 13px;
-      cursor: pointer;
+      font-size: 14px;
     }
     .suggestion-item:hover {
       background: #f2f2f7;
@@ -319,7 +319,7 @@
               <input id="nome" type="text" placeholder="Nome alimento" autocomplete="off" style="width:100%" />
               <div id="suggestions-list" class="suggestions-list hidden"></div>
             </div>
-            <input id="quantita" type="number" min="1" value="1" style="width:70px" />
+            <input id="quantita" type="number" min="1" value="1" style="width:80px" />
           </div>
           <div class="slider-row">
             <span class="label-small">Quantità: <span id="quantita-label">1</span></span>
@@ -338,7 +338,7 @@
                 <button type="button" onclick="setQuickDate(14)">+2 Settimane</button>
               </div>
             </div>
-            <button class="primary" style="flex:0 0 110px; align-self:flex-start" onclick="aggiungi()">Aggiungi</button>
+            <button class="primary" style="flex:0 0 120px; align-self:flex-start" onclick="aggiungi()">Aggiungi</button>
           </div>
         </div>
 
@@ -384,7 +384,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "dispensa_inventario_v5";
+    const STORAGE_KEY = "dispensa_inventario_v6";
     const FREQ_KEY = "dispensa_frequenze_v1";
 
     let inventario = [];
@@ -673,7 +673,7 @@
             <button class="btn-circle-small" style="background:#ff3b30" onclick="diminuisci(${it.id})">−</button>
             <button class="btn-circle-small" style="background:#34c759" onclick="aumenta(${it.id})">+</button>
           </div>
-          <div style="font-size:10px; color:#666;">${formatData(it)}</div>
+          <div style="font-size:11px; color:#666;">${formatData(it)}</div>
         `;
         container.appendChild(card);
       });
