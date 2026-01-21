@@ -731,7 +731,7 @@
     function formatDateInput(date) {
       const y = date.getFullYear();
       const m = String(date.getMonth() + 1).padStart(2, "0");
-      const d = String(date.getDate() + "").padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
       return `${y}-${m}-${d}`;
     }
     function addDaysToToday(days) {
@@ -903,6 +903,7 @@
           <div class="grid-header">
             <div class="grid-qty-row">
               <span class="badge-circle" style="background:${coloreBadge(it)}"></span>
+              <span>Qt: ${it.quantita}</span>
               <span class="pill-status">${testoScadenzaBreve(it)}</span>
             </div>
             <button class="trash" onclick="elimina(${it.id})" aria-label="Elimina">
