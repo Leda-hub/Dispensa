@@ -9,11 +9,12 @@
   <meta http-equiv="pragma" content="no-cache">
   <style>
     :root {
-      --bg: #f5f5f5;
+      --bg: #fdf7f1;
       --card-bg: #ffffff;
-      --accent: #007aff;
-      --text-main: #111111;
-      --text-secondary: #666666;
+      --accent: #ff8a34;
+      --accent-soft: #ffe0c4;
+      --text-main: #1f130a;
+      --text-secondary: #7b6755;
       --danger: #ff3b30;
       --success: #34c759;
       --warn: #ff9500;
@@ -34,13 +35,21 @@
     }
     header {
       padding: 12px 16px 4px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
-      background: var(--card-bg);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
       position: sticky;
       top: 0;
       z-index: 10;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    header span.icon {
+      font-size: 20px;
     }
     main {
       flex: 1;
@@ -48,10 +57,11 @@
     }
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 12px;
       margin-bottom: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.03);
     }
     .row {
       display: flex;
@@ -61,34 +71,64 @@
     input, button, select {
       font-size: 16px;
       padding: 7px 9px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 10px;
+      border: 1px solid #e0d2c6;
       outline: none;
       -webkit-appearance: none;
+      background: #fff;
     }
     input:focus, select:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255,138,52,0.2);
     }
     input[type="number"] { text-align: center; }
     button {
       cursor: pointer;
+      background: #fff7f0;
+      color: var(--text-main);
     }
     button.primary {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
-    button.primary:active { opacity: 0.85; }
+    button.primary:active { opacity: 0.9; }
     .label-small {
       font-size: 12px;
       color: var(--text-secondary);
       margin-bottom: 4px;
+    }
+    .label-header {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      font-weight:600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .label-header span.icon {
+      font-size: 16px;
     }
     .slider-row { display: flex; flex-direction: column; gap: 4px; }
     input[type="range"] {
       width: 100%;
       -webkit-appearance: none;
       background: transparent;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: var(--accent-soft);
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: -7px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
     }
 
     .date-quick-row {
@@ -99,18 +139,19 @@
     }
     .date-quick-row button {
       font-size: 11px;
-      padding: 4px 6px;
+      padding: 4px 8px;
       border-radius: 999px;
-      border: 1px solid #ccc;
-      background: #f2f2f7;
+      border: 1px solid #f1d3b5;
+      background: #fff3e6;
+      color: var(--text-secondary);
     }
-    .date-quick-row button:active { background:#e5e5ea; }
+    .date-quick-row button:active { background:#ffe6cf; }
 
     .segmented {
       display: flex;
-      background: #e5e5ea;
-      border-radius: 8px;
-      padding: 2px;
+      background: #f6e7d9;
+      border-radius: 999px;
+      padding: 3px;
       margin-bottom: 8px;
     }
     .segmented button {
@@ -119,11 +160,14 @@
       background: transparent;
       font-size: 13px;
       padding: 6px 4px;
-      border-radius: 6px;
+      border-radius: 999px;
+      color: var(--text-secondary);
     }
     .segmented button.active {
-      background: var(--card-bg);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      color: var(--accent);
+      font-weight: 600;
     }
     .search-row { margin-bottom: 8px; }
     .search-row input { width: 100%; }
@@ -135,17 +179,24 @@
     }
     .list-item {
       background: var(--card-bg);
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.03);
       display: flex;
       gap: 8px;
       align-items: flex-start;
       font-size: 14px;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.08s ease-out;
+    }
+    .list-item:active {
+      transform: scale(0.98);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      background:#fffaf4;
     }
     .badge-circle {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       border-radius: 999px;
       flex-shrink: 0;
       margin-top: 4px;
@@ -155,6 +206,7 @@
       font-weight: 600;
       margin-bottom: 4px;
       word-break: break-word;
+      font-size: 15px;
     }
     .list-qty-row {
       display: flex;
@@ -171,9 +223,15 @@
       line-height: 28px;
       padding: 0;
       text-align: center;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
     .btn-minus { background: var(--danger); }
     .btn-plus { background: var(--success); }
+    .btn-circle:active {
+      transform: scale(0.94);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
     .list-side {
       display: flex;
       flex-direction: column;
@@ -195,13 +253,20 @@
     }
     .grid-item {
       background: var(--card-bg);
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.03);
       font-size: 13px;
       display: flex;
       flex-direction: column;
       gap: 4px;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.08s ease-out;
+    }
+    .grid-item:active {
+      transform: scale(0.98);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      background:#fffaf4;
     }
     .grid-header {
       display:flex;
@@ -216,9 +281,16 @@
       font-size: 12px;
       color: var(--text-secondary);
     }
+    .pill-status {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #fff3e6;
+      color: var(--text-secondary);
+    }
     .grid-title {
       font-weight: 600;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.3;
       word-break: break-word;
     }
@@ -245,17 +317,26 @@
       line-height:22px;
       padding:0;
       text-align:center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+    }
+    .btn-circle-small:active {
+      transform: scale(0.94);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     .bottom-tabbar {
       position: sticky;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--card-bg);
-      border-top: 1px solid #ddd;
+      background: rgba(255,255,255,0.95);
+      border-top: 1px solid rgba(0,0,0,0.05);
       display: flex;
-      padding: 4px 0;
+      padding: 4px 0 6px;
       z-index: 20;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
     }
     .tab-button {
       flex: 1;
@@ -263,19 +344,23 @@
       font-size: 12px;
       padding: 4px 0;
       color: var(--text-secondary);
+      transition: transform 0.08s ease-out, color 0.08s ease-out;
     }
     .tab-button span { display:block; }
     .tab-button svg {
       width:22px; height:22px;
       display:block; margin:0 auto 2px;
+      transition: transform 0.08s ease-out;
     }
     .tab-button.active {
       color: var(--accent);
       font-weight: 600;
     }
+    .tab-button.active svg {
+      transform: translateY(-1px);
+    }
     .hidden { display:none; }
 
-    /* Suggerimenti */
     .suggestions {
       position: relative;
     }
@@ -285,10 +370,10 @@
       left: 0;
       right: 0;
       background: #fff;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 12px;
+      border: 1px solid #f1d3b5;
       margin-top: 4px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
       max-height: 180px;
       overflow-y: auto;
       z-index: 30;
@@ -298,7 +383,7 @@
       font-size: 14px;
     }
     .suggestion-item:hover {
-      background: #f2f2f7;
+      background: #fff3e6;
     }
 
     @media (min-width: 768px) {
@@ -308,11 +393,18 @@
 </head>
 <body>
   <div class="app">
-    <header id="header-title">Gestione dispensa</header>
+    <header id="header-title">
+      <span class="icon">🥫</span>
+      <span>Gestione dispensa</span>
+    </header>
     <main>
       <!-- TAB: GESTIONE -->
       <section id="tab-gestione">
         <div class="card" id="inserimento-card">
+          <div class="label-header">
+            <span class="icon">🧺</span>
+            <span>Nuovo alimento</span>
+          </div>
           <div class="label-small">Inserimento rapido</div>
           <div class="row">
             <div class="suggestions" style="flex:2">
@@ -595,6 +687,18 @@
       return "Scadenza: " + d.toLocaleDateString("it-IT");
     }
 
+    function testoScadenzaBreve(it) {
+      if (!it.scadenza) return "Senza scadenza";
+      const oggi = new Date(); oggi.setHours(0,0,0,0);
+      const d = new Date(it.scadenza); d.setHours(0,0,0,0);
+      const diff = Math.round((d - oggi) / (1000*60*60*24));
+      if (diff < 0) return "Scaduto";
+      if (diff === 0) return "Oggi";
+      if (diff === 1) return "Domani";
+      if (diff < 7) return `Tra ${diff}g`;
+      return d.toLocaleDateString("it-IT");
+    }
+
     function setOrdine(o) {
       ordine = o;
       document.getElementById("sort-data").classList.toggle("active", o === "dataAggiunta");
@@ -664,7 +768,7 @@
           <div class="grid-header">
             <div class="grid-qty-row">
               <span class="badge-circle" style="background:${coloreBadge(it)}"></span>
-              <span>Qt: ${it.quantita}</span>
+              <span class="pill-status">${testoScadenzaBreve(it)}</span>
             </div>
             <button class="trash" onclick="elimina(${it.id})">🗑</button>
           </div>
@@ -697,13 +801,13 @@
         dispensa.classList.add("hidden");
         btnGest.classList.add("active");
         btnDisp.classList.remove("active");
-        headerTitle.textContent = "Gestione dispensa";
+        headerTitle.innerHTML = '<span class="icon">🥫</span><span>Gestione dispensa</span>';
       } else {
         gestione.classList.add("hidden");
         dispensa.classList.remove("hidden");
         btnGest.classList.remove("active");
         btnDisp.classList.add("active");
-        headerTitle.textContent = "Dispensa";
+        headerTitle.innerHTML = '<span class="icon">📦</span><span>Dispensa</span>';
       }
     }
 
